@@ -1,31 +1,58 @@
-# DigiMan Hackathon 2026
+<div align="center">
+
+<img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/mascot.png" width="120" alt="SubStamp GO mascot">
+
+# SubStamp GO
+
+**승강장 표지판을 찍으면 "이 열차를 타도 되는지" 일본어로 알려 주는 서울 지하철 안내 서비스**
+
+한국어 표지판과 일본어 지도 사이에서 헤매지 않도록 탑승 방향을 바로 판별하고, 실시간 열차 정보로 목적지까지 안내합니다.<br>
+도착한 역에서는 역 이름 이야기가 담긴 스탬프를 모으고, 퀘스트로 서울 곳곳을 돌아봅니다.
+
+DigiMan Hackathon 2026 · 주제 「서울에 있는 일본인을 기쁘게 해 주세요」
 
 **한국어** · [日本語](https://github.com/DigiMan-Hackathon-2026/.github/blob/main/profile/README.ja.md)
 
-DigiMan Hackathon 2026에 참가하는 팀의 GitHub 조직입니다.
-대회 주제는 **「서울에 있는 일본인을 기쁘게 해 주세요」** 입니다.
+</div>
 
-## 우리가 만들 것: 지하철 안내 서비스
+## Tech Stack
 
-2026년 11월 22일 회의에서 팀원 각자가 준비한 아이디어와 데모를 공유했고, 투표로 **지하철 안내 서비스**를 핵심 주제로 정했습니다. 서울 지하철을 타면서 헤매는 일본인 여행자가 주요 이용자입니다.
+| 영역 | 기술 |
+|---|---|
+| Frontend | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white) ![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white) |
+| OCR | ![Apple Vision](https://img.shields.io/badge/Apple_Vision-000000?style=flat-square&logo=apple&logoColor=white) ![Tesseract.js](https://img.shields.io/badge/Tesseract.js-3C78D8?style=flat-square) |
+| Backend · Auth | ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white) ![LINE Login](https://img.shields.io/badge/LINE_Login-06C755?style=flat-square&logo=line&logoColor=white) ![Google Login](https://img.shields.io/badge/Google_Login-4285F4?style=flat-square&logo=google&logoColor=white) |
+| Data | ![Seoul Open Data](https://img.shields.io/badge/서울_열린데이터광장_API-558BCF?style=flat-square) |
+| Demo | ![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) |
 
-일본인 여행자가 서울 지하철에서 막히는 지점은 생각보다 단순합니다. 일본어 지도 앱은 역 이름과 방면을 일본어로 보여 주지만, 승강장 표지판은 한국어 중심이라 둘을 맞춰 보기가 어렵습니다. 여기에 노선 번호와 종착역 이름으로 방향을 표시하는 방식, 승강장 번호를 붙이는 방식까지 일본과 달라서 "이 열차를 타도 되는지"를 그 자리에서 판단하기 힘듭니다.
+> 스택은 아직 확정 전입니다. Next.js 모노레포 위에서 OCR을 기기 안에서 처리할지 API로 처리할지 검토하고 있습니다.
 
-그래서 이 서비스는 승강장 표지판을 찍으면 목적지로 가는 방향이 맞는지를 일본어로 바로 알려 주는 것에서 시작합니다. 표지판을 읽는 것만으로는 일반 AI 챗봇과 크게 다르지 않기 때문에, **빠른 판별**, **실시간 열차 정보**, 그리고 **분기 노선까지 고려한 목적지별 탑승 방향 안내**를 차별점으로 삼으려 합니다.
+## Screens
 
-길 찾기와 함께, 지하철 이용 자체를 조금 더 즐겁게 만드는 기능도 넣습니다. 방문한 역에서 받는 **스탬프**에는 역 이름의 유래와 한자·일본어 설명을 담고, **퀘스트**로 서울 곳곳을 돌아보게 합니다. 스탬프와 퀘스트는 길 안내와 별개로 즐길 수 있는 기능으로 설계합니다. AR 안내는 구현 가능성을 확인한 뒤 지하철 기능에 넣을지 결정합니다.
+<table>
+  <tr>
+    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/scan.png" width="160"><br><sub>표지판 촬영</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/result.png" width="160"><br><sub>방향 판별</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/ride.png" width="160"><br><sub>탑승 안내</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/arrive.png" width="160"><br><sub>도착 스탬프</sub></td>
+    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/stats.png" width="160"><br><sub>기록</sub></td>
+  </tr>
+</table>
 
-## 기술 방향 (검토 중)
+<sub>주제 선정 단계의 목업 데모 화면입니다. 실제 서비스 화면은 달라질 수 있습니다.</sub>
 
-현장에서 휴대폰으로 바로 시연할 수 있도록 PWA 형태의 웹앱을 생각하고 있고, Next.js 기반 모노레포가 유력합니다. 표지판 글자 인식을 기기 안에서 처리할지 OCR·LLM API를 쓸지는 아직 정하지 않았습니다. 기기 안에서 처리하면 빠르지만, 표지판 내용을 해석해 방향을 판별하려면 별도 로직이나 LLM이 필요할 수 있습니다.
+## Features
 
-사용자별 스탬프 기록을 위해 로그인(Google 또는 LINE)과 Supabase 같은 백엔드도 후보로 보고 있습니다. 앞선 데모에 있던 3D 지도는 구현 부담에 비해 꼭 필요하지 않다는 의견이 있어 빠질 수 있고, 역사 내부 길 안내는 지하에서 현재 위치를 정확히 잡기 어려워 보류했습니다. 기술 스택은 아직 확정되지 않았습니다.
+| 기능 | 설명 |
+|---|---|
+| 방향 판별 | 승강장 표지판을 찍으면 목적지로 가는 방향이 맞는지 일본어로 바로 알려 줍니다. |
+| 실시간 열차 정보 | 실제 운행 정보를 기준으로 다음 열차와 도착 시간을 안내합니다. |
+| 목적지별 탑승 안내 | 종착역 표기나 분기 노선처럼 헷갈리는 구간에서도 목적지에 맞는 열차를 골라 줍니다. |
+| 스탬프 | 방문한 역에서 역 이름의 유래와 한자·일본어 설명이 담긴 스탬프를 모읍니다. |
+| 퀘스트 | 역 주변을 돌아보는 퀘스트로 지하철 이동을 여행의 일부로 만듭니다. |
+| AR 안내 | 구현 가능성을 검토 중입니다. |
 
-## 진행 방식
-
-기능별로 담당을 나눠, 각 팀이 기능 명세와 사용자 흐름을 담은 PRD와 데모를 준비한 뒤 함께 검토하고 하나로 합칩니다. 지하철 안내 담당은 표지판 인식, 목적지 방향 판별, 실시간 열차 정보 연동이 어디까지 가능한지 먼저 조사합니다.
-
-## 팀원
+## Team
 
 | 이름 | GitHub |
 |---|---|
@@ -36,10 +63,8 @@ DigiMan Hackathon 2026에 참가하는 팀의 GitHub 조직입니다.
 | 허민영 | |
 | 유예은 | |
 
-## 레포지토리
+## Repositories
 
 | 레포 | 설명 |
 |---|---|
-| [idea](https://github.com/DigiMan-Hackathon-2026/idea) | 주제를 고를 때 쓴 아이디어 데모 모음입니다. 11월 22일 회의에서 나온 아이디어 8개의 요약과 데모 링크가 README에 있고, 팀원마다 `idea/<이름>/` 폴더에 데모와 기획서를 넣습니다. |
-
-데모 저장소는 이 조직 안에서 하나로 정리하는 방향으로 검토하고 있습니다.
+| [idea](https://github.com/DigiMan-Hackathon-2026/idea) | 주제 선정에 쓴 아이디어 데모 모음 (2026.11.22 회의) |
