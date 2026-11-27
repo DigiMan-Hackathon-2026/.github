@@ -1,56 +1,111 @@
 <div align="center">
 
-<img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/mascot.png" width="120" alt="SubStamp GO mascot">
+# クリとも
 
-# SubStamp GO
+**韓国のクリニックとお薬を、LINEで確認**
 
-**ホームの案内板を撮ると「この電車に乗っていいか」を日本語で教えてくれる、ソウル地下鉄の案内サービス**
+行く前にはクリニックの情報を確認でき、行った後には受け取ったお薬を日本語でご案内します。<br>
+新しいアプリは不要で、LINEのトークで完結します。
 
-韓国語の案内板と日本語の地図のあいだで迷わないよう、乗る方向をすぐに判定し、リアルタイムの列車情報で目的地まで案内します。<br>
-着いた駅では駅名の由来がつまったスタンプを集め、クエストでソウルのあちこちを巡ります。
+DigiMan Hackathon 2026 · テーマ「ソウルにいる日本人を喜ばせてください」・開発中
 
-DigiMan Hackathon 2026 · テーマ「ソウルにいる日本人を喜ばせてください」
-
-[한국어](https://github.com/DigiMan-Hackathon-2026) · **日本語**
+[한국어](https://github.com/DigiMan-Hackathon-2026/.github/blob/main/profile/README.md) · **日本語**
 
 </div>
+
+## サービスの流れ
+
+```mermaid
+flowchart LR
+    A["💬 LINEで開始"] --> B["🏥 クリニック確認<br/>安心情報カード"]
+    B --> C["🚶 クリニック訪問"]
+    C --> D["📷 薬の袋・箱を撮影"]
+    D --> E["💊 成分・効能・注意事項"]
+    E --> F["❓ 追加の質問"]
+```
+
+## レイヤー構成
+
+```mermaid
+flowchart TD
+    U["ユーザー（LINEアプリ）"] --> L1["<b>Layer 1・対話</b><br/>LINEボット（Node.js）"]
+    L1 -->|薬の写真| L2["<b>Layer 2・認識とマッチング</b><br/>どの薬かを特定"]
+    L2 -->|"薬の名前または品目コード"| L3A["<b>Layer 3・医薬品情報</b><br/>kusuri"]
+    L1 -->|クリニック検索| L3B["<b>Layer 3・クリニック情報</b><br/>安心情報カード"]
+    L3A --> L1
+    L3B --> L1
+```
+
+| Layer | 役割 | リポジトリ | 状況 |
+|---|---|---|---|
+| 1・対話 | メッセージと写真を受け取り、カードで返信 | [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)（開発・検証ツール） | 検証ツールと練習用ボットは実装済み、サービス用ボットは準備中 |
+| 2・認識とマッチング | 写真からどの薬かを特定 | 未公開 | モデルを開発・試験中 |
+| 3・医薬品情報 | 成分・効能・注意事項の案内 | [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri) | API実装済み、連携前 |
+| 3・クリニック情報 | クリニック安心情報カード | 未公開 | 表示項目を確定 |
+
+### Layer 1・対話
+
+メッセージと写真を受け取り、後ろのPythonサーバーを呼び出して、親しみやすい日本語で返信するLINEボットサーバーです。
+`line-stack`は、AIエージェントが実際のスマートフォンのLINE画面でボットの返信を確認するための開発ツールで、練習用ボット`hello-bot`を含みます。Androidに対応し、iOSは対応予定です。
+
+### Layer 2・認識とマッチング
+
+> このレイヤーはまだリポジトリにありません。以下はチームで決めた処理の流れです。
+
+1. 写真からVLM/OCRで文字と特徴を読み取ります。
+2. ブースティングモデルが候補を約20件に絞ります。
+3. LLMが候補を再確認し、1件に確定するか、ユーザーが選ぶ候補を表示します。
+
+LLMが存在しない薬の名前を作り出さないよう、先に候補を絞ってから確認します。
+
+### Layer 3・医薬品情報（`kusuri`）
+
+特定された薬の情報を、韓国の食品医薬品安全処の医薬品許可情報をもとに案内します。
+
+| 機能 | 方法 |
+|---|---|
+| 薬の確認と成分 | 薬の名前のルールマッチング、公式データと成分辞書 |
+| 効能・注意事項 | 許可文書の決まった項目を日本語に翻訳 |
+| 追加の質問 | その薬の許可文書を検索して回答（RAG） |
+
+### Layer 3・クリニック情報
+
+クリニック安心情報カードには次の項目を表示します。
+
+- 医療機関名
+- 所在地
+- 診療科目
+- 開設日
+- 外国人患者誘致機関の登録有無
+
+## 表示例
+
+医薬品情報モジュールが作るLINEメッセージの一部です。
+
+```text
+타이레놀정500밀리그람(아세트아미노펜)
+
+【成分】
+・アセトアミノフェン（아세트아미노펜） 500mg
+
+【効能】
+かぜによる発熱および疼痛（痛み）、頭痛、神経痛、筋肉痛、月経痛 …
+
+【使ってはいけない場合】
+1) この薬に対して過敏症のある患者
+2) 消化性潰瘍のある患者
+…
+```
+
+> クリともは公開情報を案内するサービスです。診断や服用してよいかの判断は行いません。医師・薬剤師に相談してください。
 
 ## Tech Stack
 
 | 分野 | 技術 |
 |---|---|
-| Frontend | ![Next.js](https://img.shields.io/badge/Next.js-000000?style=flat-square&logo=nextdotjs&logoColor=white) ![PWA](https://img.shields.io/badge/PWA-5A0FC8?style=flat-square&logo=pwa&logoColor=white) |
-| OCR | ![Apple Vision](https://img.shields.io/badge/Apple_Vision-000000?style=flat-square&logo=apple&logoColor=white) ![Tesseract.js](https://img.shields.io/badge/Tesseract.js-3C78D8?style=flat-square) |
-| Backend · Auth | ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white) ![LINE Login](https://img.shields.io/badge/LINE_Login-06C755?style=flat-square&logo=line&logoColor=white) ![Google Login](https://img.shields.io/badge/Google_Login-4285F4?style=flat-square&logo=google&logoColor=white) |
-| Data | ![Seoul Open Data](https://img.shields.io/badge/ソウル市オープンデータ_API-558BCF?style=flat-square) |
-| Demo | ![Three.js](https://img.shields.io/badge/Three.js-000000?style=flat-square&logo=threedotjs&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) |
-
-> 技術スタックはまだ確定していません。Next.js のモノレポをベースに、OCR を端末の中で処理するか API で処理するかを検討しています。
-
-## Screens
-
-<table>
-  <tr>
-    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/scan.png" width="160"><br><sub>案内板を撮る</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/result.png" width="160"><br><sub>方向の判定</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/ride.png" width="160"><br><sub>乗車中の案内</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/arrive.png" width="160"><br><sub>到着スタンプ</sub></td>
-    <td align="center"><img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/stats.png" width="160"><br><sub>きろく</sub></td>
-  </tr>
-</table>
-
-<sub>テーマ選定段階のモックアップです。実際のサービス画面は変わる可能性があります。</sub>
-
-## Features
-
-| 機能 | 説明 |
-|---|---|
-| 方向の判定 | ホームの案内板を撮ると、目的地へ向かう方向かどうかを日本語ですぐに教えます。 |
-| リアルタイム列車情報 | 実際の運行情報をもとに、次の電車と到着時刻を案内します。 |
-| 目的地ごとの乗車案内 | 終着駅の表記や分岐する路線など、まぎらわしい区間でも目的地に合う電車を選びます。 |
-| スタンプ | 訪れた駅で、駅名の由来や漢字・日本語の説明がのったスタンプを集めます。 |
-| クエスト | 駅のまわりを巡るクエストで、地下鉄での移動を旅の一部にします。 |
-| AR案内 | 実装できるかを検討中です。 |
+| 対話 | ![LINE](https://img.shields.io/badge/LINE_Messaging_API-06C755?logo=line&logoColor=white&style=flat-square) ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white&style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white&style=flat-square) |
+| 認識とマッチング | ![VLM / OCR](https://img.shields.io/badge/VLM_%2F_OCR-555555?&style=flat-square) ![Boosting](https://img.shields.io/badge/Boosting_Model-EB5E28?&style=flat-square) ![Claude](https://img.shields.io/badge/Claude-D97757?logo=anthropic&logoColor=white&style=flat-square) |
+| 医薬品情報 | ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white&style=flat-square) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white&style=flat-square) ![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?logo=qdrant&logoColor=white&style=flat-square) ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white&style=flat-square) |
 
 ## Team
 
@@ -63,8 +118,10 @@ DigiMan Hackathon 2026 · テーマ「ソウルにいる日本人を喜ばせて
 | 허민영（ホ・ミニョン） | |
 | 유예은（ユ・イェウン） | |
 
-## Repositories
+## リポジトリ
 
-| リポジトリ | 説明 |
-|---|---|
-| [idea](https://github.com/DigiMan-Hackathon-2026/idea) | テーマ選定に使ったアイデアのデモ集（2026.11.22 の会議） |
+| リポジトリ | Layer | 説明 |
+|---|---|---|
+| [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack) | 1 | LINEボットを実機で検証するClaude Codeプラグインと練習用ボット（非公開） |
+| [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri) | 3 | 韓国の薬の成分・効能・注意事項を日本語で案内するAPI（非公開） |
+| [idea](https://github.com/DigiMan-Hackathon-2026/idea) | - | テーマ選定に使ったアイデアデモ集（2026年11月22日の会議） |
