@@ -2,115 +2,95 @@
 
 <img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/kuritomo-banner.png" width="100%" alt="クリとも">
 
-**韓国のクリニックとお薬を、LINEで確認できる日本人旅行者向けチャットボット**
+**写真1枚で韓国のクリニックとお薬を確認できる、日本人旅行者向けLINEボット**
 
-DigiMan Hackathon 2026「ソウルにいる日本人を喜ばせてください」・開発中
+DigiMan Hackathon 2026「ソウルにいる日本人を喜ばせてください」出品作
 
-<sub>企画と構成は確定前のため、変更される場合があります。</sub>
+<sub>ハッカソンで開発中のため、企画と構成は実装の過程で変わる場合があります。</sub>
 
 [한국어](https://github.com/DigiMan-Hackathon-2026/.github/blob/main/profile/README.md) · **日本語**
 
 </div>
 
-## サービス紹介
+## プロジェクトの背景
 
-短い日程でソウルに施術を受けに来る日本人旅行者は、2つの場面で同じ不安を抱えます。「信じて大丈夫？何を聞けばいい？」
+短い日程でソウルを訪れて肌・美容の施術を受ける日本人旅行者は、来院の前と後の2回、情報の空白に直面します。
 
-- **クリニックに行く前**: SNS広告で見た医院が公式資料に開設届のある所か、外国人患者誘致機関として登録されているかを自分で確かめるのは困難です。
-- **施術を受けた後**: 薬局で受け取った薬が何か、何に気をつけるべきかを知るのは簡単ではありません。
+- **施術前**: SNS広告や予約ページで見たクリニックが、正式に開設届のある医療機関なのか、保健福祉部に登録された外国人患者誘致機関なのかを、日本語で確かめるのは困難です。
+- **施術後**: 薬局で受け取る薬の袋や箱は韓国語だけで、どんな成分で何に気をつけるべきかが分かりにくいです。
 
-クリともは、メニューを選ばず**LINEに写真を送るだけ**で、公式資料を確認して日本語の結果カードでお知らせすることを目指しています。
+クリともは、アプリのインストールやメニュー探しをせずに、いつものLINEトークに広告のスクリーンショットや薬の写真を送るだけで、この問題を解決することを目指します。写真から要点を読み取り、公共データと照合して日本語の結果カードで返します。
 
-## 大切にしていること
+## データの原則
 
-- おすすめ、評価、診断、違法性の判定はしません。公式資料で事実を確認します。
-- 確認できたことと**確認できていないこと**を分けて表示します。
-- 確認した事実には出典とデータの基準日を添えます。
-- 不確かな結果を「確認済み」として表示しません。
-- 最終的な判断は医師と薬剤師にお任せします。
+医療情報は誤った案内が健康上のリスクにつながるため、推測や拡大解釈を排除するように設計します。
+
+- **おすすめ・評価・判定はしません。** 診断や違法性の判断もせず、健康保険審査評価院・保健福祉部・食品医薬品安全処の公共データにある事実を伝えます。
+- **確認できたことと確認できていないことを分けます。** 誘致機関の登録有無は確認しますが、日本語通訳の常駐、施術の品質、最終的な支払額は未確認の項目として表示します。
+- **出典と基準日を明示することを原則とします。**
+- **曖昧な場合は断定しません。** 同じ名前の病院や含有量だけが違う製品は、候補を示して選んでもらいます。
+- **服用と施術の判断は医師と薬剤師に任せます。**
 
 ## 利用の流れ
 
 <img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/flow-ja.png" width="100%" alt="利用の流れ">
 
-1. **クリニック確認**: 広告や予約画面を送ると、クリニック安心情報カードが届きます。
-2. **お薬を撮影**: 施術後に受け取った薬の袋や箱を撮影して送ります。
-3. **お薬の案内**: 成分、効能、注意事項を日本語で受け取ります。
-4. **追加の質問**: 「妊娠中でも使えますか？」のように気になることを質問します。
+- **施術前**: クリニックの広告や予約画面を送ると、医療機関名、所在地、診療科目、開設日、外国人患者誘致機関の登録有無をまとめた安心情報カードが届きます。
+- **施術後**: 薬の袋や箱を撮影して送ると、成分、効能、注意事項が日本語で届きます。
+- **追加の質問**: 「妊娠中でも服用できますか？」のように質問すると、その薬の許可文書を調べて根拠とともに回答します。
 
-### 結果の表示方法
+応答は確認の度合いによって4つに分かれます。
 
-| 状態 | どんなとき | 表示 |
+| 状態 | どんなとき | 応答 |
 |---|---|---|
-| **確認** | 公式資料で1件に特定できた | 結果カード |
-| **候補** | どの病院・薬か曖昧 | 候補を表示して選んでもらう |
-| **確認できず** | 不確か、または見つからない | 「確認できませんでした」カード |
-| **聞き返し** | 文字が読み取れない | 写真の再送をお願いする |
+| **確認** | 公式データの1件と一致 | 結果カード |
+| **候補** | 似た名前や含有量の違いで複数 | 選択肢を提示 |
+| **確認不可** | 名簿にない、または信頼度が低い | 推測せず未確認と案内 |
+| **再撮影** | 反射や低解像度で読めない | 写真の再送を依頼 |
 
-## レイヤー構成
+## アーキテクチャとリポジトリ
 
 | Layer | 役割 | リポジトリ | 状況 |
 |---|---|---|---|
-| **1 対話** | 写真を受け取りカードで返信 | [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)（検証ツール） | ボット準備中 |
+| **1 対話** | ユーザーとの接点 | [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)（開発・検証ツール、非公開） | サービス用ボット準備中 |
 | **2 認識とマッチング** | どの病院・薬かを特定 | 未公開 | 開発・試験中 |
-| **3 医薬品情報** | 薬の説明 | [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri) | API実装済み、連携前 |
-| **3 クリニック情報** | 病院の説明 | 未公開 | 項目確定 |
+| **3 医薬品情報** | 薬の説明 | [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri)（非公開） | API実装済み、連携前 |
+| **3 クリニック情報** | 病院の説明 | 未公開 | 実装準備 |
 
-### Layer 1・対話
+### Layer 1・対話インターフェース
 
-ユーザーとの窓口です。LINEボットが写真とメッセージを受け取って後ろのレイヤーに渡し、結果を親しみやすい日本語のカードとボタンで返します。
+LINEボットがWebhookで写真とメッセージを受け取ってバックエンドに渡し、結果を日本語のカードとボタンで表示します。`line-stack`には、Claude Codeエージェントが実際のAndroid端末のLINE画面でボットの返信を確認してから作業を終えるためのプラグインと、練習用ボット（`hello-bot`）があります。
 
 ### Layer 2・認識とマッチング
 
-広告の日本語・英語の病院名や薬の名前が、公式名簿のどれに当たるかを特定します。同じ名前の病院や含有量だけが違う薬が多いため、誤った答えを断定しないことが重要です。
+写真の日本語・英語の病院名や韓国語の薬の名前を、公式名簿の名称に結び付けます。
 
-1. 写真の文字をVLM/OCRで読み取ります。
-2. ブースティングモデル（LightGBM）が候補を絞り、正しい確率を計算します。
-3. LLMが候補を再確認して確定するか、ユーザーが選ぶ候補を表示します。
+1. VLM/OCRで写真の文字を読み取ります。
+2. LightGBMモデルが候補を絞り、一致する確率を計算します。
+3. LLMがスコアと文脈を再確認し、確定・候補提示・確認不可を判定します。
 
-### Layer 3・医薬品情報
+### Layer 3・医薬品情報（`kusuri`）
 
-薬が特定されたら、韓国の食品医薬品安全処の医薬品許可情報をもとに説明します。成分は公式データから調べ、効能と注意事項は許可文書を翻訳します。追加の質問には、その薬の文書を検索して回答します（RAG）。
-
-### Layer 3・クリニック情報
-
-| カードの項目 | 出典 |
-|---|---|
-| 医療機関名、所在地、診療科目、開設日 | 健康保険審査評価院 |
-| 外国人患者誘致機関の登録有無 | 保健福祉部 |
-
-誘致機関の登録と日本語対応の可否は別です。施術の品質、通訳の可否、最終的な金額は**確認できていないこと**として表示します。
-
-## リポジトリ
-
-### [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri)・Layer 3 医薬品情報（非公開）
-
-Python（FastAPI）で作ったお薬案内APIです。
+Python（FastAPI）のAPIサーバーと、LINEボット用TypeScriptクライアント（`clients/line-bot`）で構成されます。
 
 | API | 役割 |
 |---|---|
 | `/v1/drug/prescription` | 薬の名前の一覧 → 成分と品目コード |
-| `/v1/drug/info` | 薬1つ → 成分、効能、注意事項（日本語） |
-| `/v1/drug/ask` | 薬についての質問 → 許可文書を根拠に回答 |
+| `/v1/drug/info` | 薬1つ → 効能と注意事項を日本語に翻訳 |
+| `/v1/drug/ask` | 追加の質問 → 許可文書を根拠に回答（RAG: Qdrant、`embeddinggemma`、Gemini） |
 
-LINEボットですぐ使えるTypeScriptの呼び出し・メッセージ変換コード（`clients/line-bot`）も含みます。ベクトル検索にはQdrantと`embeddinggemma`、翻訳と回答にはGeminiを使います。
+### Layer 3・クリニック情報
 
-### [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)・Layer 1 開発ツール（非公開）
+健康保険審査評価院の医療機関情報と保健福祉部の誘致機関登録データを組み合わせて、安心情報カードを作る予定です。
 
-AIエージェントがLINEボットを作るとき、実際のスマートフォンのLINE画面で返信を確認してから完了を報告するようにするClaude Codeプラグインです。練習用ボット`hello-bot`を含み、Android端末での検証に対応しています。
+<sub>2026年11月22日のテーマ選定で作ったプロトタイプは<a href="https://github.com/DigiMan-Hackathon-2026/idea">idea</a>リポジトリにあります。</sub>
 
-### [idea](https://github.com/DigiMan-Hackathon-2026/idea)・アイデア集
-
-2026年11月22日の会議でテーマを選ぶためにメンバーが作ったデモ集です。
-
-## Tech Stack
+## 技術スタック
 
 ![LINE](https://img.shields.io/badge/LINE_Messaging_API-06C755?logo=line&logoColor=white&style=flat-square) ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white&style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white&style=flat-square) ![VLM / OCR](https://img.shields.io/badge/VLM_%2F_OCR-555555?&style=flat-square) ![LightGBM](https://img.shields.io/badge/LightGBM-EB5E28?&style=flat-square) ![Claude](https://img.shields.io/badge/Claude-D97757?logo=anthropic&logoColor=white&style=flat-square) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white&style=flat-square) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white&style=flat-square) ![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?logo=qdrant&logoColor=white&style=flat-square) ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white&style=flat-square)
 
-## Team
+## チーム
 
 | 최도일（チェ・ドイル） | 한시온（ハン・シオン） | 이상무（イ・サンム） | 임종훈（イム・ジョンフン） | 허민영（ホ・ミニョン） | 유예은（ユ・イェウン） |
 |:-:|:-:|:-:|:-:|:-:|:-:|
 | [@novvvv](https://github.com/novvvv) | [@zionhann](https://github.com/zionhann) | [@sangmu1126](https://github.com/sangmu1126) | [@ImJongHoon](https://github.com/ImJongHoon) |  |  |
-
-> 公開情報を案内するサービスです。診断や服用してよいかの判断は行いません。医師・薬剤師にご相談ください。
