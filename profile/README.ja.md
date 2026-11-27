@@ -6,48 +6,67 @@
 
 DigiMan Hackathon 2026「ソウルにいる日本人を喜ばせてください」・開発中
 
+<sub>企画と構成は確定前のため、変更される場合があります。</sub>
+
 [한국어](https://github.com/DigiMan-Hackathon-2026/.github/blob/main/profile/README.md) · **日本語**
 
 </div>
 
 ## サービス紹介
 
-韓国のクリニックを訪れる日本人旅行者は、病院の情報を韓国語で調べる必要があり、受け取った薬が何かを知るのも簡単ではありません。
-クリともは、訪問前のクリニック確認から訪問後のお薬案内までを、LINEのトークひとつでつなぐことを目指しています。
+短い日程でソウルに施術を受けに来る日本人旅行者は、2つの場面で同じ不安を抱えます。「信じて大丈夫？何を聞けばいい？」
+
+- **クリニックに行く前**: SNS広告で見た医院が公式資料に開設届のある所か、外国人患者誘致機関として登録されているかを自分で確かめるのは困難です。
+- **施術を受けた後**: 薬局で受け取った薬が何か、何に気をつけるべきかを知るのは簡単ではありません。
+
+クリともは、メニューを選ばず**LINEに写真を送るだけ**で、公式資料を確認して日本語の結果カードでお知らせすることを目指しています。
+
+## 大切にしていること
+
+- おすすめ、評価、診断、違法性の判定はしません。公式資料で事実を確認します。
+- 確認できたことと**確認できていないこと**を分けて表示します。
+- 確認した事実には出典とデータの基準日を添えます。
+- 不確かな結果を「確認済み」として表示しません。
+- 最終的な判断は医師と薬剤師にお任せします。
 
 ## 利用の流れ
 
 <img src="https://raw.githubusercontent.com/DigiMan-Hackathon-2026/.github/main/profile/images/flow-ja.png" width="100%" alt="利用の流れ">
 
-1. **クリニック確認**: 行きたい医療機関の情報を安心情報カードで確認します。
-2. **お薬を撮影**: 韓国で受け取った薬の袋や箱を撮影して送ります。
+1. **クリニック確認**: 広告や予約画面を送ると、クリニック安心情報カードが届きます。
+2. **お薬を撮影**: 施術後に受け取った薬の袋や箱を撮影して送ります。
 3. **お薬の案内**: 成分、効能、注意事項を日本語で受け取ります。
 4. **追加の質問**: 「妊娠中でも使えますか？」のように気になることを質問します。
 
-## レイヤー構成
+### 結果の表示方法
 
-役割ごとに3つの層に分けています。LINEボットが後ろのPythonサーバーを呼び出す構成です。
+| 状態 | どんなとき | 表示 |
+|---|---|---|
+| **確認** | 公式資料で1件に特定できた | 結果カード |
+| **候補** | どの病院・薬か曖昧 | 候補を表示して選んでもらう |
+| **確認できず** | 不確か、または見つからない | 「確認できませんでした」カード |
+| **聞き返し** | 文字が読み取れない | 写真の再送をお願いする |
+
+## レイヤー構成
 
 | Layer | 役割 | リポジトリ | 状況 |
 |---|---|---|---|
-| **1 対話** | ユーザーとのやり取り | [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)（検証ツール） | ボット準備中 |
-| **2 認識とマッチング** | どの薬かを特定 | 未公開 | 開発・試験中 |
+| **1 対話** | 写真を受け取りカードで返信 | [line-stack](https://github.com/DigiMan-Hackathon-2026/line-stack)（検証ツール） | ボット準備中 |
+| **2 認識とマッチング** | どの病院・薬かを特定 | 未公開 | 開発・試験中 |
 | **3 医薬品情報** | 薬の説明 | [kusuri](https://github.com/DigiMan-Hackathon-2026/kusuri) | API実装済み、連携前 |
 | **3 クリニック情報** | 病院の説明 | 未公開 | 項目確定 |
 
 ### Layer 1・対話
 
-ユーザーとの窓口です。LINEボットサーバー（Node.js）がメッセージと写真を受け取って後ろのレイヤーに渡し、結果を親しみやすい日本語のメッセージとボタンで返します。
+ユーザーとの窓口です。LINEボットが写真とメッセージを受け取って後ろのレイヤーに渡し、結果を親しみやすい日本語のカードとボタンで返します。
 
 ### Layer 2・認識とマッチング
 
-写真からどの薬かを決める段階で、まだリポジトリにありません。
+広告の日本語・英語の病院名や薬の名前が、公式名簿のどれに当たるかを特定します。同じ名前の病院や含有量だけが違う薬が多いため、誤った答えを断定しないことが重要です。
 
-1. VLM/OCRで写真の文字と特徴を読み取ります。
-2. ブースティングモデルが候補を約20件に絞ります。
-3. LLMが候補を確認して1件に決めるか、ユーザーが選ぶ候補を表示します。
-
-AIが存在しない薬の名前を作り出さないよう、先に候補を絞ってから確認します。
+1. 写真の文字をVLM/OCRで読み取ります。
+2. ブースティングモデル（LightGBM）が候補を絞り、正しい確率を計算します。
+3. LLMが候補を再確認して確定するか、ユーザーが選ぶ候補を表示します。
 
 ### Layer 3・医薬品情報
 
@@ -55,10 +74,12 @@ AIが存在しない薬の名前を作り出さないよう、先に候補を絞
 
 ### Layer 3・クリニック情報
 
-訪問先を判断するための事実をカードで表示します。
+| カードの項目 | 出典 |
+|---|---|
+| 医療機関名、所在地、診療科目、開設日 | 健康保険審査評価院 |
+| 外国人患者誘致機関の登録有無 | 保健福祉部 |
 
-- 医療機関名、所在地、診療科目
-- 開設日、外国人患者誘致機関の登録有無
+誘致機関の登録と日本語対応の可否は別です。施術の品質、通訳の可否、最終的な金額は**確認できていないこと**として表示します。
 
 ## リポジトリ
 
@@ -84,7 +105,7 @@ AIエージェントがLINEボットを作るとき、実際のスマートフ�
 
 ## Tech Stack
 
-![LINE](https://img.shields.io/badge/LINE_Messaging_API-06C755?logo=line&logoColor=white&style=flat-square) ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white&style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white&style=flat-square) ![VLM / OCR](https://img.shields.io/badge/VLM_%2F_OCR-555555?&style=flat-square) ![Boosting](https://img.shields.io/badge/Boosting_Model-EB5E28?&style=flat-square) ![Claude](https://img.shields.io/badge/Claude-D97757?logo=anthropic&logoColor=white&style=flat-square) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white&style=flat-square) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white&style=flat-square) ![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?logo=qdrant&logoColor=white&style=flat-square) ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white&style=flat-square)
+![LINE](https://img.shields.io/badge/LINE_Messaging_API-06C755?logo=line&logoColor=white&style=flat-square) ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?logo=nodedotjs&logoColor=white&style=flat-square) ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white&style=flat-square) ![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white&style=flat-square) ![VLM / OCR](https://img.shields.io/badge/VLM_%2F_OCR-555555?&style=flat-square) ![LightGBM](https://img.shields.io/badge/LightGBM-EB5E28?&style=flat-square) ![Claude](https://img.shields.io/badge/Claude-D97757?logo=anthropic&logoColor=white&style=flat-square) ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white&style=flat-square) ![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white&style=flat-square) ![Qdrant](https://img.shields.io/badge/Qdrant-DC244C?logo=qdrant&logoColor=white&style=flat-square) ![Gemini](https://img.shields.io/badge/Gemini-8E75B2?logo=googlegemini&logoColor=white&style=flat-square)
 
 ## Team
 
